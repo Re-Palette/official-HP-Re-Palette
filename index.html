@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="ja" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Re-Palette | Beauty & Social Integration</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Italiana&family=Inter:wght@400;500;600;700&family=Noto+Serif+JP:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @theme {
+            --font-display: "Italiana", serif;
+            --font-japanese: "Noto Serif JP", serif;
+            --font-sans: "Inter", sans-serif;
+            --color-brand-beige: #f5f1e6;
+            --color-brand-navy: #0c1a30;
+            --color-brand-pink: #f48fb1;
+            --color-brand-gold: #d4af37;
+        }
+
+        :root {
+            --brand-beige: #f5f1e6;
+            --brand-navy: #0c1a30;
+            --brand-pink: #f48fb1;
+            --brand-gold: #d4af37;
+        }
+
+        body {
+            background-color: var(--brand-beige);
+            color: var(--brand-navy);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+        }
+
+        .italiana { font-family: 'Italiana', serif; }
+        .japanese { font-family: 'Noto Serif JP', serif; }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .floating-card {
+            background-image: url("https://www.transparenttextures.com/patterns/natural-paper.png");
+            box-shadow: 0 30px 60px -12px rgba(12, 26, 48, 0.2);
+        }
+
+        .loader {
+            position: fixed;
+            inset: 0;
+            background: var(--brand-beige);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s ease-out;
+        }
+
+        .philosophy-section {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+    </style>
+</head>
+<body>
+    <!-- Preloader -->
+    <div id="loader" class="loader">
+        <h1 class="italiana text-4xl tracking-widest mb-4">RE-PALETTE</h1>
+        <div class="w-48 h-px bg-brand-navy/10 relative overflow-hidden">
+            <div id="loader-bar" class="absolute inset-y-0 left-0 bg-brand-navy w-0 transition-all duration-300"></div>
+        </div>
+        <p id="loader-text" class="mt-4 text-[10px] uppercase tracking-widest text-brand-navy/40">Preparing Garden 0%</p>
+    </div>
+
+    <!-- Background Decor -->
+    <div class="fixed inset-0 pointer-events-none z-0 opacity-20">
+        <div class="absolute top-10 left-10 text-[8px] uppercase tracking-[1em] vertical-rl h-40 border-l border-brand-navy/20 pl-2">Ritual of Resilience</div>
+        <div class="absolute bottom-10 right-10 text-[8px] uppercase tracking-[1em] vertical-rl h-40 border-r border-brand-navy/20 pr-2">Re-Palette Mindful Beauty</div>
+    </div>
+
+    <!-- Header -->
+        <header class="fixed top-0 left-0 w-full z-50 px-8 py-6 flex justify-between items-center mix-blend-difference text-white">
+        <div class="italiana text-2xl tracking-tighter">RE-PALETTE</div>
+        <div class="flex items-center gap-12">
+            <nav class="hidden lg:flex gap-12 text-[10px] uppercase font-bold tracking-widest">
+                <a href="#story" class="hover:text-brand-pink transition-colors" data-i18n="nav_story">Story</a>
+                <a href="#studio" class="hover:text-brand-pink transition-colors" data-i18n="nav_studio">Studio</a>
+                <a href="#journal" class="hover:text-brand-pink transition-colors" data-i18n="nav_journal">Journal</a>
+                <a href="#lab" class="hover:text-brand-pink transition-colors" data-i18n="nav_lab">Lab</a>
+                <a href="#social" class="hover:text-brand-pink transition-colors" data-i18n="nav_social">Social</a>
+            </nav>
+        <!-- Language Switcher & Social -->
+            <div class="hidden md:flex items-center gap-8 text-sm">
+                <div class="flex gap-3 text-[9px] font-bold tracking-widest border-r border-brand-navy/10 pr-8">
+                    <button onclick="setLanguage('ja')" class="lang-btn hover:text-brand-pink transition-colors opacity-100" data-lang="ja">JP</button>
+                    <button onclick="setLanguage('en')" class="lang-btn hover:text-brand-pink transition-colors opacity-40" data-lang="en">EN</button>
+                    <button onclick="setLanguage('zh')" class="lang-btn hover:text-brand-pink transition-colors opacity-40" data-lang="zh">CN</button>
+                    <button onclick="setLanguage('ko')" class="lang-btn hover:text-brand-pink transition-colors opacity-40" data-lang="ko">KR</button>
+                </div>
+                <div class="flex gap-6">
+                    <a href="https://www.instagram.com/repalette_official/?hl=ja" target="_blank" rel="noopener noreferrer" class="hover:text-brand-pink transition-colors" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="https://www.facebook.com/profile.php?id=61587543673430&locale=ja_JP" target="_blank" rel="noopener noreferrer" class="hover:text-brand-pink transition-colors" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="https://www.linkedin.com/in/haruto-suzuki-614a253b9/" target="_blank" rel="noopener noreferrer" class="hover:text-brand-pink transition-colors" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                </div>
+            </div>
+        </div>
+        <button class="md:hidden">
+            <div class="w-6 h-px bg-white mb-1"></div>
+            <div class="w-6 h-px bg-white"></div>
+        </button>
+    </header>
+
+    <!-- Main Section -->
+    <main>
+        <!-- Hero Animation Area -->
+        <section id="hero-trigger" class="relative w-full h-[600vh]">
+            <div class="sticky top-0 h-screen w-full overflow-hidden bg-[#f5f1e6]">
+                <canvas id="hero-canvas"></canvas>
+                
+                <!-- Hero Overlays -->
+                <div id="hero-content" class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 pointer-events-none z-20 bg-brand-beige/40 backdrop-blur-[3px]">
+                    <div id="hero-title" class="overflow-hidden mb-4">
+                        <h1 class="italiana text-6xl md:text-[120px] leading-[0.9] tracking-tighter text-brand-navy">
+                            <span data-i18n="hero_title_1">Cultivate</span><br>
+                            <span class="ml-12 md:ml-24 italic" data-i18n="hero_title_2">Your Radiance</span>
+                        </h1>
+                    </div>
+                    <p id="hero-subtitle" class="text-[10px] md:text-xs uppercase tracking-[0.5em] font-bold text-brand-navy/80 max-w-xs md:max-w-md" data-i18n="hero_subtitle">
+                        Beauty as a ritual of social reintegration & rediscovery
+                    </p>
+                    <div id="hero-scroll" class="absolute bottom-12 flex flex-col items-center gap-4 opacity-40">
+                        <span class="text-[9px] uppercase tracking-widest" data-i18n="hero_scroll">Scroll to Bloom</span>
+                        <div class="w-px h-12 bg-gradient-to-b from-brand-navy to-transparent"></div>
+                    </div>
+                </div>
+
+                <!-- Featured Card (Side reveal) -->
+                <div id="hero-card" class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-full w-full md:w-[480px] p-8 md:p-12 z-30 transition-all duration-1000">
+                    <div class="floating-card p-12 bg-[#0c1a30] border border-white/10 relative overflow-hidden">
+                        <div class="absolute top-0 left-0 w-1.5 h-full bg-brand-gold"></div>
+                        <span class="text-[10px] font-bold tracking-[0.4em] uppercase text-white/60 mb-6 block">Spring Collection</span>
+                        <h3 class="italiana text-4xl mb-8 leading-[1.1] text-white">The Art of <br><span class="italic opacity-60">Re-Emergence</span></h3>
+                        <p class="text-[13px] leading-relaxed text-white/90 mb-10 japanese font-medium">
+                            私たちは、美容を単なる外見の装飾ではなく、<br>内面的なレジリエンス（回復力）への儀式であると考えています。
+                        </p>
+                        <button class="group w-full py-5 border border-white text-[10px] font-bold uppercase tracking-widest text-white relative overflow-hidden transition-all">
+                            <span class="relative z-10 group-hover:text-brand-navy transition-colors duration-300">View Methodology</span>
+                            <div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Story Overlay (Inside sticky) -->
+                <div id="story-overlay" class="absolute inset-0 z-40 pointer-events-none flex items-center justify-center philosophy-section bg-brand-beige/20 flex-col px-8 text-center">
+                    <span class="text-[10px] font-bold tracking-[0.4em] uppercase text-brand-navy/40 mb-6" data-i18n="story_label">Story</span>
+                    <h2 class="italiana text-[3.8vw] sm:text-3xl md:text-5xl text-brand-navy mb-8 leading-tight max-w-4xl">
+                        <span class="block whitespace-nowrap" data-i18n="story_title_1">鏡の中の自分が変わる。</span>
+                        <span class="block mt-2 whitespace-nowrap" data-i18n="story_title_2">その一瞬が、止まっていた時間を動かす。</span>
+                    </h2>
+                    <p class="max-w-2xl text-sm md:text-base leading-relaxed text-brand-navy/80 font-medium mb-8 japanese" data-i18n="story_desc">
+                        17歳でRe-Paletteを立ち上げた鈴木は、「ひきこもり」という境界線を、美容の力で溶かしていくビジョンを掲げています。日本の若者が抱える自己否定感という課題に対し、17歳の視点から向き合い続けています。
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-left max-w-3xl">
+                        <div>
+                            <h4 class="text-[10px] font-bold uppercase tracking-widest mb-2 text-brand-gold" data-i18n="story_vision_label">The Vision</h4>
+                            <p class="text-[11px] text-brand-navy/70 leading-relaxed uppercase tracking-tighter" data-i18n="story_vision_desc">Dissolving social barriers through aesthetic empowerment.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-[10px] font-bold uppercase tracking-widest mb-2 text-brand-gold" data-i18n="story_origins_label">Origins</h4>
+                            <p class="text-[11px] text-brand-navy/70 leading-relaxed uppercase tracking-tighter" data-i18n="story_origins_desc">Founded at 17 to address the crisis of self-worth in modern youth.</p>
+                        </div>
+                    </div>
+                    <button class="mt-12 px-12 py-4 border border-brand-navy text-[10px] uppercase font-bold tracking-widest pointer-events-auto hover:bg-brand-navy hover:text-white transition-all" data-i18n="story_btn">
+                        Discover Our Journey
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Studio Section -->
+        <section id="studio" class="w-full bg-[#0c1a30] py-40 text-[#f5f1e6] px-8 md:px-24">
+            <div class="max-w-6xl mx-auto">
+                <div class="mb-24 flex flex-col md:flex-row md:items-end justify-between gap-12">
+                    <div class="max-w-2xl">
+                        <span class="text-[10px] font-bold tracking-[0.4em] uppercase text-white/40 mb-4 block" data-i18n="studio_label">Studio</span>
+                        <h2 class="italiana text-[4.5vw] sm:text-3xl md:text-5xl mb-8 whitespace-nowrap" data-i18n="studio_title">自分を整える、未来を整える。</h2>
+                        <p class="text-sm md:text-base text-white/60 leading-relaxed font-light font-sans japanese" data-i18n="studio_desc">
+                            一つひとつの施術を、再出発の儀式に。美容体験とメンタリングを融合させた独自のパッケージを提供します。
+                        </p>
+                    </div>
+                    <button class="px-10 py-4 border border-white/20 text-[10px] font-bold uppercase tracking-widest hover:bg-white hover:text-brand-navy transition-all" data-i18n="studio_btn">
+                        View Service Menu
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-1px bg-white/10 border border-white/10">
+                    <div class="bg-brand-navy p-12 hover:bg-white/5 transition-colors">
+                        <div class="text-brand-gold italiana text-4xl mb-8">01</div>
+                        <h4 class="italiana text-2xl mb-4" data-i18n="studio_item1_title">Personal Transformation</h4>
+                        <p class="text-xs leading-relaxed text-white/50 mb-8 japanese" data-i18n="studio_item1_desc">プロの美容師による1対1の施術。あなたの魅力を引き出し、新しい自分への扉を開きます。</p>
+                        <div class="w-8 h-px bg-brand-gold"></div>
+                    </div>
+                    <div class="bg-brand-navy p-12 hover:bg-white/5 transition-colors">
+                        <div class="text-brand-gold italiana text-4xl mb-8">02</div>
+                        <h4 class="italiana text-2xl mb-4" data-i18n="studio_item2_title">Mentoring Session</h4>
+                        <p class="text-xs leading-relaxed text-white/50 mb-8 japanese" data-i18n="studio_item2_desc">施術前後の対話による心理的安全性の確保。技術だけでなく、心への配慮を大切にします。</p>
+                        <div class="w-8 h-px bg-brand-gold"></div>
+                    </div>
+                    <div class="bg-brand-navy p-12 hover:bg-white/5 transition-colors">
+                        <div class="text-brand-gold italiana text-4xl mb-8">03</div>
+                        <h4 class="italiana text-2xl mb-4" data-i18n="studio_item3_title">Self-Care Workshop</h4>
+                        <p class="text-xs leading-relaxed text-white/50 mb-8 japanese" data-i18n="studio_item3_desc">自宅で自信を維持するためのスタイリング・レクチャー。日常の中での自立をサポートします。</p>
+                        <div class="w-8 h-px bg-brand-gold"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Journal Section -->
+        <section id="journal" class="py-40 bg-brand-beige border-b border-brand-navy/5 px-8 md:px-24">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-24">
+                    <span class="text-[10px] font-bold tracking-[0.4em] uppercase text-brand-navy/40 mb-6 block" data-i18n="journal_label">Journal</span>
+                    <h2 class="italiana text-4xl md:text-5xl mb-6" data-i18n="journal_title">「変わり続ける。挑み続ける。」</h2>
+                    <p class="text-sm text-brand-navy/60 font-medium" data-i18n="journal_desc">Re-Paletteが歩む日常の記録。</p>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div class="group cursor-pointer">
+                        <div class="aspect-[16/9] bg-brand-navy/5 overflow-hidden mb-6 relative">
+                            <img src="https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1600" alt="Event" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700">
+                            <div class="absolute inset-0 bg-brand-navy/20"></div>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-brand-navy/40" data-i18n="journal_item1_label">Event Reports</span>
+                        <h3 class="italiana text-2xl mt-4 mb-4" data-i18n="journal_item1_title">SusHi Tech Tokyo 反響レポート</h3>
+                        <p class="text-xs text-brand-navy/60 leading-relaxed font-sans mb-4 japanese" data-i18n="journal_item1_desc">5/29のイベントでの気づきや、参加者の皆様からいただいた温かい声を紹介します。</p>
+                        <span class="text-[10px] border-b border-brand-navy pb-1 font-bold" data-i18n="journal_btn">Read Entry</span>
+                    </div>
+                    <div class="group cursor-pointer">
+                        <div class="aspect-[16/9] bg-brand-navy/5 overflow-hidden mb-6 relative border border-brand-navy/5">
+                             <img src="https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=1600" alt="Thoughts" class="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-700">
+                             <div class="absolute inset-0 bg-brand-navy/20"></div>
+                        </div>
+                        <span class="text-[9px] font-bold uppercase tracking-widest text-brand-navy/40" data-i18n="journal_item2_label">Thoughts</span>
+                        <h3 class="italiana text-2xl mt-4 mb-4" data-i18n="journal_item2_title">美容 × 心理学 × 社会福祉</h3>
+                        <p class="text-xs text-brand-navy/60 leading-relaxed font-sans mb-4 japanese" data-i18n="journal_item2_desc">境界線を溶かすことの難しさと、そこに見える一筋の希望についての考察です。</p>
+                        <span class="text-[10px] border-b border-brand-navy pb-1 font-bold" data-i18n="journal_btn">Read Entry</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Lab Section -->
+        <section id="lab" class="py-40 bg-brand-beige text-brand-navy px-8 md:px-24">
+            <div class="max-w-6xl mx-auto">
+                <div class="flex flex-col lg:flex-row gap-24 items-center">
+                    <div class="lg:w-1/2">
+                        <span class="text-[10px] font-bold tracking-[0.4em] uppercase text-brand-navy/40 mb-6 block" data-i18n="lab_label">Lab</span>
+                        <h2 class="italiana text-[4.5vw] sm:text-3xl md:text-5xl mb-10 leading-tight">
+                            <span class="block whitespace-nowrap" data-i18n="lab_title1">美容を、科学する。</span>
+                            <span class="italic opacity-60 block mt-2 whitespace-nowrap" data-i18n="lab_title2">感性を、エビデンスに。</span>
+                        </h2>
+                        <p class="text-sm md:text-base text-brand-navy/60 leading-relaxed font-light mb-12 japanese" data-i18n="lab_desc">
+                            Re-Paletteは、単なる美容サービスに留まりません。日本美容福祉学会や大学教授陣との連携を通じ、美容が自己効力感に与える影響を定量化し、社会復帰の成功率を高めるモデルを構築しています。
+                        </p>
+                        <div class="space-y-8">
+                            <div class="flex gap-6 items-start pb-8 border-b border-brand-navy/10">
+                                <span class="text-brand-gold text-lg italiana">01</span>
+                                <div>
+                                    <h4 class="italiana text-sm uppercase tracking-widest mb-2" data-i18n="lab_item1_title">Self-Efficacy Research</h4>
+                                    <p class="text-[11px] text-brand-navy/40 uppercase tracking-tighter" data-i18n="lab_item1_desc">Quantifying the psychological impact of aesthetic rituals.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-6 items-start pb-8 border-b border-brand-navy/10">
+                                <span class="text-brand-gold text-lg italiana">02</span>
+                                <div>
+                                    <h4 class="italiana text-sm uppercase tracking-widest mb-2" data-i18n="lab_item2_title">Academic Partnerships</h4>
+                                    <p class="text-[11px] text-brand-navy/40 uppercase tracking-tighter" data-i18n="lab_item2_desc">Collaboration with JSWB and leading psychology professors.</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-6 items-start">
+                                <span class="text-brand-gold text-lg italiana">03</span>
+                                <div>
+                                    <h4 class="italiana text-sm uppercase tracking-widest mb-2" data-i18n="lab_item3_title">Social Impact Model</h4>
+                                    <p class="text-[11px] text-brand-navy/40 uppercase tracking-tighter" data-i18n="lab_item3_desc">Building structured pathways for social reintegration.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="lg:w-1/2 grid grid-cols-2 gap-4">
+                        <div class="aspect-square bg-brand-navy/5 border border-brand-navy/10 flex items-center justify-center flex-col p-8 text-center group hover:bg-brand-gold/20 transition-colors">
+                            <i class="fa-solid fa-microscope text-2xl mb-4 text-brand-gold"></i>
+                            <span class="text-[9px] uppercase tracking-widest font-bold" data-i18n="lab_box1">Research Data</span>
+                        </div>
+                        <div class="aspect-square bg-brand-navy/5 border border-brand-navy/10 flex items-center justify-center flex-col p-8 text-center group hover:bg-brand-gold/20 transition-colors">
+                            <i class="fa-solid fa-graduation-cap text-2xl mb-4 text-brand-gold"></i>
+                            <span class="text-[9px] uppercase tracking-widest font-bold" data-i18n="lab_box2">JSWB Support</span>
+                        </div>
+                        <div class="aspect-square bg-brand-navy/5 border border-brand-navy/10 flex items-center justify-center flex-col p-8 text-center group hover:bg-brand-gold/20 transition-colors mt-8">
+                            <i class="fa-solid fa-chart-line text-2xl mb-4 text-brand-gold"></i>
+                            <span class="text-[9px] uppercase tracking-widest font-bold" data-i18n="lab_box3">Impact Tracking</span>
+                        </div>
+                        <div class="aspect-square bg-brand-navy/5 border border-brand-navy/10 flex items-center justify-center flex-col p-8 text-center group hover:bg-brand-gold/20 transition-colors mt-8">
+                            <i class="fa-solid fa-building-columns text-2xl mb-4 text-brand-gold"></i>
+                            <span class="text-[9px] uppercase tracking-widest font-bold" data-i18n="lab_box4">University Lab</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Social Impact Section -->
+        <section id="social" class="py-40 bg-brand-beige px-8 md:px-24">
+            <div class="max-w-6xl mx-auto flex flex-col items-center text-center">
+                <span class="text-[10px] font-bold tracking-[0.4em] uppercase text-brand-navy/40 mb-6" data-i18n="social_label">Social</span>
+                <h2 class="italiana text-4xl md:text-6xl mb-12 max-w-4xl" data-i18n="social_title">
+                    個人の自信が、社会の豊かさに循環する世界へ。
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12 w-full text-left max-w-4xl">
+                    <div class="p-12 border border-brand-navy/10 bg-white/50 backdrop-blur-sm">
+                        <h4 class="italiana text-2xl mb-6" data-i18n="social_item1_title">Circular Support</h4>
+                        <p class="text-[13px] text-brand-navy/70 leading-relaxed font-sans mb-8 japanese" data-i18n="social_item1_desc">一般向けイベントやサービスの収益を、支援を必要とする方々への無償・低価格施術に充てる独自の循環型モデルです。</p>
+                        <div class="flex items-center gap-4">
+                            <span class="text-[10px] uppercase font-bold tracking-widest border-b border-brand-navy pb-1" data-i18n="social_item1_link">Learn about donation</span>
+                        </div>
+                    </div>
+                    <div class="p-12 border border-brand-navy/10 bg-white/50 backdrop-blur-sm">
+                        <h4 class="italiana text-2xl mb-6" data-i18n="social_item2_title">Collaborations</h4>
+                        <p class="text-[13px] text-brand-navy/70 leading-relaxed font-sans mb-8 japanese" data-i18n="social_item2_desc">フリースクール、行政、NPO、そして資生堂のような志を共にする企業とのネットワークを広げています。</p>
+                        <div class="flex items-center gap-4">
+                            <span class="text-[10px] uppercase font-bold tracking-widest border-b border-brand-navy pb-1" data-i18n="social_item2_link">Partner with us</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Newsletter Section -->
+        <section class="py-40 bg-brand-beige border-b border-brand-navy/5 flex items-center justify-center px-8">
+            <div class="max-w-2xl text-center">
+                <span class="text-[10px] font-bold tracking-[0.4em] uppercase text-brand-navy/40 mb-6 block" data-i18n="newsletter_label">Stay Connected</span>
+                <h2 class="italiana text-4xl md:text-5xl mb-12" data-i18n="newsletter_title">Join Our Mindful Gallery</h2>
+                <div class="flex flex-col md:flex-row gap-4">
+                    <input type="email" placeholder="repalette809@gmail.com" class="flex-1 bg-transparent border-b border-brand-navy/20 py-4 text-xs font-sans focus:outline-none focus:border-brand-navy transition-colors">
+                    <button class="px-12 py-4 bg-brand-navy text-white text-[10px] uppercase font-bold tracking-widest hover:bg-brand-navy/90 transition-all" data-i18n="newsletter_btn">
+                        Subscribe
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-brand-beige py-24 px-8 md:px-24">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-start gap-12">
+            <div>
+                <div class="italiana text-3xl tracking-tighter mb-6">RE-PALETTE</div>
+                <p class="text-[10px] text-brand-navy/40 max-w-xs leading-relaxed uppercase tracking-widest" data-i18n="footer_tagline">
+                    Beauty integration studio focusing on resilient transitions and social rediscovery.
+                </p>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-12 md:gap-24">
+                <div class="flex flex-col gap-4 text-[10px] uppercase font-bold tracking-widest">
+                    <span class="text-brand-navy/30 mb-2" data-i18n="footer_service_label">Service</span>
+                    <a href="#story" class="hover:text-brand-pink transition-colors" data-i18n="nav_story">Story</a>
+                    <a href="#studio" class="hover:text-brand-pink transition-colors" data-i18n="nav_studio">Studio</a>
+                    <a href="#journal" class="hover:text-brand-pink transition-colors" data-i18n="nav_journal">Journal</a>
+                    <a href="#lab" class="hover:text-brand-pink transition-colors" data-i18n="nav_lab">Lab</a>
+                </div>
+                <div class="flex flex-col gap-4 text-[10px] uppercase font-bold tracking-widest">
+                    <span class="text-brand-navy/30 mb-2" data-i18n="footer_social_label">Social Impact</span>
+                    <div class="flex gap-4 mb-2 text-sm">
+                        <a href="https://www.instagram.com/repalette_official/?hl=ja" target="_blank" rel="noopener noreferrer" class="hover:text-brand-pink transition-colors" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/profile.php?id=61587543673430&locale=ja_JP" target="_blank" rel="noopener noreferrer" class="hover:text-brand-pink transition-colors" aria-label="Facebook"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="https://www.linkedin.com/in/haruto-suzuki-614a253b9/" target="_blank" rel="noopener noreferrer" class="hover:text-brand-pink transition-colors" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                    </div>
+                    <a href="#" class="hover:text-brand-pink transition-colors" data-i18n="footer_artworks">Artworks</a>
+                    <a href="#" class="hover:text-brand-pink transition-colors" data-i18n="footer_events">Events</a>
+                </div>
+                <div class="flex flex-col gap-4 text-[10px] uppercase font-bold tracking-widest">
+                    <span class="text-brand-navy/30 mb-2" data-i18n="footer_legal_label">Legal</span>
+                    <a href="#" class="hover:text-brand-pink transition-colors" data-i18n="footer_privacy">Privacy</a>
+                    <a href="#" class="hover:text-brand-pink transition-colors" data-i18n="footer_terms">Terms</a>
+                </div>
+            </div>
+        </div>
+        <div class="max-w-6xl mx-auto mt-24 pt-8 border-t border-brand-navy/10 flex justify-between items-center text-[9px] uppercase tracking-widest text-brand-navy/40 font-bold">
+            <div>&copy; 2026 Re-Palette Studio</div>
+            <div>Built for Resilience</div>
+        </div>
+    </footer>
+
+    <script>
+        gsap.registerPlugin(ScrollTrigger);
+
+        const canvas = document.getElementById('hero-canvas');
+        const context = canvas.getContext('2d');
+        const frameCount = 240;
+        
+        // Sequence Paths (001 to 240)
+        const currentFrame = index => `/images/ezgif-frame-${(index + 1).toString().padStart(3, '0')}.jpg`;
+
+        const images = [];
+        const fallbacks = [];
+        const flowerImages = [
+            'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=1600',
+            'https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?q=80&w=1600',
+            'https://images.unsplash.com/photo-1552046122-03184de85e08?q=80&w=1600',
+            'https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=1600',
+            'https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1600'
+        ];
+
+        const air = { frame: 0 };
+
+        // Preload Fallbacks
+        let fallbacksLoaded = 0;
+        flowerImages.forEach(url => {
+            const img = new Image();
+            img.src = url;
+            img.onload = () => {
+                fallbacksLoaded++;
+                if (fallbacksLoaded === flowerImages.length) startApp();
+            };
+            img.onerror = () => {
+                fallbacksLoaded++;
+                if (fallbacksLoaded === flowerImages.length) startApp();
+            };
+            fallbacks.push(img);
+        });
+
+        // Preload Main Sequence
+        let imagesLoaded = 0;
+        for (let i = 0; i < frameCount; i++) {
+            const img = new Image();
+            img.src = currentFrame(i);
+            img.onload = () => {
+                imagesLoaded++;
+                updateLoaderProgress();
+            };
+            img.onerror = () => {
+                // If local fails, we map to fallbacks
+                const idx = Math.floor((i / frameCount) * flowerImages.length);
+                img.src = flowerImages[idx];
+                img.onerror = null;
+            };
+            images.push(img);
+        }
+
+        function updateLoaderProgress() {
+            const progress = Math.round((imagesLoaded / frameCount) * 100);
+            document.getElementById('loader-bar').style.width = progress + '%';
+            document.getElementById('loader-text').innerText = `Preparing Garden ${progress}%`;
+        }
+
+        function startApp() {
+            // Hide Loader
+            gsap.to('#loader', {
+                opacity: 0,
+                duration: 1,
+                delay: 0.5,
+                onComplete: () => {
+                    document.getElementById('loader').style.display = 'none';
+                    initScrollEffects();
+                }
+            });
+
+            // Initial Resize
+            handleResize();
+            render();
+        }
+
+        function handleResize() {
+            canvas.width = window.innerWidth * window.devicePixelRatio;
+            canvas.height = window.innerHeight * window.devicePixelRatio;
+            render();
+        }
+
+        function render() {
+            const frameIndex = air.frame;
+            const img = images[frameIndex];
+            
+            // Background color
+            context.fillStyle = '#f5f1e6';
+            context.fillRect(0, 0, canvas.width, canvas.height);
+
+            const draw = (image, alpha = 1.0, scaleBoost = 1.0) => {
+                if (!image.complete || image.naturalWidth === 0) return false;
+                const hRatio = canvas.width / image.width;
+                const vRatio = canvas.height / image.height;
+                const ratio = Math.max(hRatio, vRatio) * scaleBoost;
+                const x = (canvas.width - image.width * ratio) / 2;
+                const y = (canvas.height - image.height * ratio) / 2;
+                context.globalAlpha = alpha;
+                context.drawImage(image, x, y, image.width * ratio, image.height * ratio);
+                context.globalAlpha = 1.0;
+                return true;
+            };
+
+            const isRemoteFallback = img.src.includes('unsplash');
+
+            if (!isRemoteFallback && img.complete) {
+                draw(img);
+            } else if (fallbacks.length > 0) {
+                // Smooth cross-fade for fallbacks
+                const totalProgress = frameIndex / (frameCount - 1);
+                const sectionCount = fallbacks.length - 1;
+                const section = totalProgress * sectionCount;
+                const index1 = Math.floor(section);
+                const index2 = Math.min(index1 + 1, fallbacks.length - 1);
+                const localProgress = section % 1;
+                
+                const scaleBoost = 1.0 + (totalProgress * 0.25);
+                
+                if (fallbacks[index1]) draw(fallbacks[index1], 1 - localProgress, scaleBoost);
+                if (fallbacks[index2] && index1 !== index2) draw(fallbacks[index2], localProgress, scaleBoost);
+            }
+
+            // Decorative overlay when sequence is almost done
+            if (frameIndex > frameCount * 0.9) {
+                context.fillStyle = 'rgba(12, 26, 48, 0.05)';
+                context.font = '300 80px Italiana';
+                context.textAlign = 'center';
+                context.fillText('RE-PALETTE', canvas.width / 2, canvas.height / 2 + 300 * (window.devicePixelRatio));
+            }
+        }
+
+        function initScrollEffects() {
+            // Hero Animation
+            gsap.to(air, {
+                frame: frameCount - 1,
+                snap: "frame",
+                ease: "none",
+                scrollTrigger: {
+                    trigger: "#hero-trigger",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 0.5,
+                    onUpdate: render
+                }
+            });
+
+            // Content Fades
+            gsap.to("#hero-content", {
+                opacity: 0,
+                y: -30,
+                scrollTrigger: {
+                    trigger: "#hero-trigger",
+                    start: "0% top",
+                    end: "8% top",
+                    scrub: true
+                }
+            });
+
+            // Side Card Reveal
+            gsap.to("#hero-card", {
+                x: 0,
+                scrollTrigger: {
+                    trigger: "#hero-trigger",
+                    start: "10% top",
+                    end: "25% top",
+                    scrub: true
+                }
+            });
+            
+            gsap.to("#hero-card", {
+                opacity: 0,
+                x: -100,
+                scrollTrigger: {
+                    trigger: "#hero-trigger",
+                    start: "75% top",
+                    end: "95% top",
+                    scrub: true
+                }
+            });
+        }
+
+        const translations = {
+            ja: {
+                hero_title_1: "Cultivate", hero_title_2: "Your Radiance", hero_subtitle: "Beauty as a ritual of social reintegration & rediscovery", hero_scroll: "Scroll to Bloom",
+                nav_story: "Story", nav_studio: "Studio", nav_journal: "Journal", nav_lab: "Lab", nav_social: "Social",
+                story_label: "Story", story_title_1: "鏡の中の自分が変わる。", story_title_2: "その一瞬が、止まっていた時間を動かす。",
+                story_desc: "17歳でRe-Paletteを立ち上げた鈴木は、「ひきこもり」という境界線を、美容の力で溶かしていくビジョンを掲げています。日本の若者が抱える自己否定感という課題に対し、17歳の視点から向き合い続けています。",
+                story_vision_label: "The Vision", story_vision_desc: "美容のエンパワーメントを通じて社会的な障壁を解消する。",
+                story_origins_label: "Origins", story_origins_desc: "現代の若者の自己肯定感の危機に取り組むため、17歳で設立。",
+                story_btn: "私たちの歩みを知る",
+                studio_label: "Studio", studio_title: "自分を整える、未来を整える。", studio_desc: "一つひとつの施術を、再出発の儀式に。美容体験とメンタリングを融合させた独自のパッケージを提供します。",
+                studio_btn: "サービスメニューを見る", studio_item1_title: "Personal Transformation", studio_item1_desc: "プロの美容師による1対1の施術。あなたの魅力を引き出し、新しい自分への扉を開きます。",
+                studio_item2_title: "Mentoring Session", studio_item2_desc: "施術前後の対話による心理的安全性の確保。技術だけでなく、心への配慮を大切にします。",
+                studio_item3_title: "Self-Care Workshop", studio_item3_desc: "自宅で自信を維持するためのスタイリング・レクチャー。日常の中での自立をサポートします。",
+                journal_label: "Journal", journal_title: "「変わり続ける。挑み続ける。」", journal_desc: "Re-Paletteが歩む日常の記録。",
+                journal_item1_label: "Event Reports", journal_item1_title: "SusHi Tech Tokyo 反響レポート", journal_item1_desc: "5/29 hostのイベントでの気づきや、参加者の皆様からいただいた温かい声を紹介します。",
+                journal_item2_label: "Thoughts", journal_item2_title: "美容 × 心理学 × 社会福祉", journal_item2_desc: "境界線を溶かすことの難しさと、そこに見える一筋の希望についての考察です。",
+                journal_btn: "記事を読む", lab_label: "Lab", lab_title1: "美容を、科学する。", lab_title2: "感性を、エビデンスに。",
+                lab_desc: "Re-Paletteは、単なる美容サービスに留まりません。日本美容福祉学会や大学教授陣との連携を通じ、美容が自己効力感に与える影響を定量化し、社会復帰の成功率を高めるモデルを構築しています。",
+                lab_item1_title: "Self-Efficacy Research", lab_item1_desc: "美容の儀式が心理に与える影響のデータ化。",
+                lab_item2_title: "Academic Partnerships", lab_item2_desc: "日本美容福祉学会や大学教授との共同研究。",
+                lab_item3_title: "Social Impact Model", lab_item3_desc: "社会復帰の成功率を高めるスキームの構築。",
+                lab_box1: "Research Data", lab_box2: "JSWB Support", lab_box3: "Impact Tracking", lab_box4: "University Lab",
+                social_label: "Social", social_title: "個人の自信が、社会の豊かさに循環する世界へ。",
+                social_item1_title: "Circular Support", social_item1_desc: "一般向けイベントやサービスの収益を、支援を必要とする方々への無償・低価格施術に充てる独自のモデルです。",
+                social_item1_link: "寄付について知る", social_item2_title: "Partnership", social_item2_desc: "フリースクール、行政、NPO、そして資生堂のような志を共ににする企業とのネットワークを広げています。",
+                social_item2_link: "提携について", newsletter_label: "Stay Connected", newsletter_title: "マインドフル・ギャラリーに参加する", newsletter_btn: "購読する",
+                footer_tagline: "美容を通じて社会復帰とレジリエンスを支援するインテグレーション・スタジオ。",
+                footer_service_label: "Service", footer_social_label: "Social Impact", footer_artworks: "Artworks", footer_events: "Events",
+                footer_legal_label: "Legal", footer_privacy: "Privacy Policy", footer_terms: "Terms of Use"
+            },
+            en: {
+                hero_title_1: "Cultivate", hero_title_2: "Your Radiance", hero_subtitle: "Beauty as a ritual of social reintegration & rediscovery", hero_scroll: "Scroll to Bloom",
+                nav_story: "Story", nav_studio: "Studio", nav_journal: "Journal", nav_lab: "Lab", nav_social: "Social",
+                story_label: "Story", story_title_1: "Seeing the new you in the mirror.", story_title_2: "That single moment moves the frozen time.",
+                story_desc: "Founded at 17 by Suzuki, Re-Palette aims to dissolve the barriers of social withdrawal through the power of beauty. We address the self-negation issues of Japanese youth from a teenage perspective.",
+                story_vision_label: "The Vision", story_vision_desc: "Dissolving social barriers through aesthetic empowerment.",
+                story_origins_label: "Origins", story_origins_desc: "Founded at 17 to address the crisis of self-worth in modern youth.",
+                story_btn: "Discover Our Journey",
+                studio_label: "Studio", studio_title: "Regulate yourself, regulate the future.", studio_desc: "Transforming each treatment into a ritual of renewal. Offering a unique package that merges beauty experiences with mentoring.",
+                studio_btn: "View Service Menu", studio_item1_title: "Personal Transformation", studio_item1_desc: "One-on-one treatment by professional stylists. Bringing out your charm and opening doors to a new self.",
+                studio_item2_title: "Mentoring Session", studio_item2_desc: "Ensuring psychological safety through dialogue before and after treatment. We value heart as much as technique.",
+                studio_item3_title: "Self-Care Workshop", studio_item3_desc: "Styling lectures to maintain confidence at home. Supporting independence in daily life.",
+                journal_label: "Journal", journal_title: "“Keep changing. Keep challenging.”", journal_desc: "Record of Re-Palette's daily journey.",
+                journal_item1_label: "Event Reports", journal_item1_title: "SusHi Tech Tokyo Impact Report", journal_item1_desc: "Insights from the May 29th event and warm feedback from participants.",
+                journal_item2_label: "Thoughts", journal_item2_title: "Beauty × Psychology × Social Welfare", journal_item2_desc: "Reflections on the difficulty of dissolving boundaries and the hope found within.",
+                journal_btn: "Read Articles", lab_label: "Lab", lab_title1: "Science of Beauty.", lab_title2: "Sensitivity to Evidence.",
+                lab_desc: "Re-Palette goes beyond simple beauty services. Through collaboration with the Japan Society of Beauty & Welfare and university professors, we quantify the impact of beauty on self-efficacy and build models to increase social reintegration success.",
+                lab_item1_title: "Self-Efficacy Research", lab_item1_desc: "Digitalizing the psychological impact of beauty rituals.",
+                lab_item2_title: "Academic Partnerships", lab_item2_desc: "Joint research with the Japan Society of Beauty & Welfare and academic experts.",
+                lab_item3_title: "Social Impact Model", lab_item3_desc: "Building schemes to increase the success rate of social reintegration.",
+                lab_box1: "Research Data", lab_box2: "JSWB Support", lab_box3: "Impact Tracking", lab_box4: "University Lab",
+                social_label: "Social", social_title: "A world where individual confidence circulates into social richness.",
+                social_item1_title: "Circular Support", social_item1_desc: "A unique model where profits from public events and services fund free or low-cost treatments for those in need.",
+                social_item1_link: "About Donations", social_item2_title: "Partnership", social_item2_desc: "Expanding networks with free schools, government, NPOs, and like-minded companies.",
+                social_item2_link: "Partner with us", newsletter_label: "Stay Connected", newsletter_title: "Join Our Mindful Gallery", newsletter_btn: "Subscribe",
+                footer_tagline: "Beauty integration studio focusing on resilient transitions and social rediscovery.",
+                footer_service_label: "Service", footer_social_label: "Social Impact", footer_artworks: "Artworks", footer_events: "Events",
+                footer_legal_label: "Legal", footer_privacy: "Privacy", footer_terms: "Terms"
+            },
+            zh: {
+                hero_title_1: "培养", hero_title_2: "您的光采", hero_subtitle: "美容作为社会融合与重新发现的仪式", hero_scroll: "向下滚动以绽放",
+                nav_story: "Story", nav_studio: "Studio", nav_journal: "Journal", nav_lab: "Lab", nav_social: "Social",
+                story_label: "故事", story_title_1: "镜子里的自己改变了。", story_title_2: "那一瞬间，让停止的时间重新流动。",
+                story_desc: "铃木在17岁时创立了Re-Palette，致力于通过美容的力量消除“蛰居族”的社会界限。他以17岁的视角，直面日本年轻人的自我否定感这一课题。",
+                story_vision_label: "愿景", story_vision_desc: "通过审美赋权消除社会障碍。",
+                story_origins_label: "起源", story_origins_desc: "17岁时创立，旨在解决现代年轻人的自尊心危机。",
+                story_btn: "了解我们的历程",
+                studio_label: "工作坊", studio_title: "整理自我，整理未来。", studio_desc: "将每一次护理转化为重新开始的仪式。我们提供融合美容体验与心理辅导的独特套餐。",
+                studio_btn: "查看服务菜单", studio_item1_title: "个人蜕变", studio_item1_desc: "由专业美容师进行一对一护理。激发您的魅力，开启全新自我之门。",
+                studio_item2_title: "心理辅导", studio_item2_desc: "通过护理前后的对话确保心理安全。我们不仅注重技术，更注重心灵的关怀。",
+                studio_item3_title: "自我护理工作坊", studio_item3_desc: "教授在居家环境下维持自信的造型课程。支持日常生活中的独立性。",
+                journal_label: "日志", journal_title: "“不断改变，不断挑战。”", journal_desc: "Re-Palette日常历程的记录。",
+                journal_item1_label: "活动报告", journal_item1_title: "SusHi Tech Tokyo 反响报告", journal_item1_desc: "5月29日活动中的感悟以及参与者的温情心声。",
+                journal_item2_label: "思考", journal_item2_title: "美容 × 心理学 × 社会福利", journal_item2_desc: "关于消除界限的难度以及其中蕴含的一线希望的思考。",
+                journal_btn: "阅读文章", lab_label: "实验室", lab_title1: "以科学之名，审视美容。", lab_title2: "将感性，转化为数据。",
+                lab_desc: "Re-Palette不仅仅是美容服务。通过与日本美容福祉学会及大学教授合作，我们量化美容对自我效能的影响，构建提高回归社会成功率的模型。",
+                lab_item1_title: "自我效能研究", lab_item1_desc: "数字化美容仪式对心理的影响。",
+                lab_item2_title: "产学合作", lab_item2_desc: "与日本美容福祉学会及大学教授的共同研究。",
+                lab_item3_title: "社会回归模型", lab_item3_desc: "构建提高社会参与成功率的机制。",
+                lab_box1: "研究数据", lab_box2: "美容福祉支持", lab_box3: "影响力追踪", lab_box4: "大学实验室",
+                social_label: "社会", social_title: "让个人的自信，循环于社会的繁荣中。",
+                social_item1_title: "循环型支持", social_item1_desc: "将面向大众的活动和服务收益用于资助弱势群体，实现独特的循环模式。",
+                social_item1_link: "了解捐赠", social_item2_title: "合作伙伴", social_item2_desc: "扩展与非正규学校、行政部门、NPO以及资生堂等志同道合企业的网络。",
+                social_item2_link: "关于合作", newsletter_label: "保持联系", newsletter_title: "加入我们的正念画廊", newsletter_btn: "订阅",
+                footer_tagline: "致力于社会融合与复原力的美容综合工作室。",
+                footer_service_label: "服务", footer_social_label: "社会影响", footer_artworks: "作品集", footer_events: "活动",
+                footer_legal_label: "法律", footer_privacy: "隐私政策", footer_terms: "服务条款"
+            },
+            ko: {
+                hero_title_1: "Cultivate", hero_title_2: "Your Radiance", hero_subtitle: "Beauty as a ritual of social reintegration & rediscovery", hero_scroll: "Scroll to Bloom",
+                nav_story: "Story", nav_studio: "Studio", nav_journal: "Journal", nav_lab: "Lab", nav_social: "Social",
+                story_label: "Story", story_title_1: "거울 속의 자신이 바뀌는 순간.", story_title_2: "그 찰나가 멈춰있던 시간을 움직입니다.",
+                story_desc: "17세에 Re-Palette를 세운 스즈키는 '히키코모리'라는 보이지 않는 선을 미용의 힘으로 녹여내려 합니다. 일본 청년들의 자기 부정이라는 문제에 17세의 시선으로 마주하고 있습니다.",
+                story_vision_label: "The Vision", story_vision_desc: "미용을 통한 임파워먼트로 사회적 장벽을 해소합니다.",
+                story_origins_label: "Origins", story_origins_desc: "현대 청년들의 자존감 위기를 해결하고자 17세에 설립.",
+                story_btn: "우리의 발자취 확인하기",
+                studio_label: "Studio", studio_title: "나를 가다듬고, 미래를 가다듬다.", studio_desc: "하나하나의 시술을 새로운 출발의 의식으로. 미용 체험과 멘토링이 융합된 독자적인 패키지를 제공합니다.",
+                studio_btn: "서비스 메뉴 보기", studio_item1_title: "Personal Transformation", studio_item1_desc: "전문 미용사의 1:1 시술. 당신의 매력을 끌어내어 새로운 모습으로 안내합니다.",
+                studio_item2_title: "Mentoring Session", studio_item2_desc: "시술 전후의 대화를 통한 심리적 안정 확보. 기술뿐만 아니라 마음까지 배려합니다.",
+                studio_item3_title: "Self-Care Workshop", studio_item3_desc: "가정에서 자신감을 유지하기 위한 스타일링 교육. 일상 속의 자립을 지원합니다.",
+                journal_label: "Journal", journal_title: "“끊임없이 변화하고, 계속 도전하다.”", journal_desc: "Re-Palette가 걷고 있는 일상의 기록.",
+                journal_item1_label: "Event Reports", journal_item1_title: "SusHi Tech Tokyo 반응 리포트", journal_item1_desc: "5월 29일 이벤트에서의 깨달음과 참가자들의 따뜻한 목소리를 소개합니다.",
+                journal_item2_label: "Thoughts", journal_item2_title: "미용 × 심리학 × 사회복지", journal_item2_desc: "경계선을 녹이는 것의 어려움과 그 안에서 보이는 희망에 대한 고찰입니다.",
+                journal_btn: "글 읽기", lab_label: "Lab", lab_title1: "미용을 과학하다.", lab_title2: "감성을 데이터로.",
+                lab_desc: "Re-Palette는 단순한 미용 서비스를 넘어섭니다. 일본 미용복지학회 및 대학 교수진과 협력하여 미용이 자기 효능감에 미치는 영향을 정량화하고 사회 복귀 성공률을 높이는 모델을 구축합니다.",
+                lab_item1_title: "Self-Efficacy Research", lab_item1_desc: "미용 의식이 심리에 미치는 영향의 데이터화.",
+                lab_item2_title: "Academic Partnerships", lab_item2_desc: "일본 미용복지학회 및 대학 교수와의 공동 연구.",
+                lab_item3_title: "Social Impact Model", lab_item3_desc: "사회 복귀 성공률을 높이기 위한 스키마 구축.",
+                lab_box1: "Research Data", lab_box2: "JSWB Support", lab_box3: "Impact Tracking", lab_box4: "University Lab",
+                social_label: "Social", social_title: "개인의 자신감이 사회의 풍요로움으로 순환하는 세상.",
+                social_item1_title: "Circular Support", social_item1_desc: "대중을 위한 서비스 수익을 도움이 필요한 이들의 시술에 사용하는 독자적인 순환 모델입니다.",
+                social_item1_link: "기부 안내", social_item2_title: "Partnership", social_item2_desc: "대안학교, 행정기관, NPO 및 뜻을 같이하는 기업들과의 네트워크를 확장하고 있습니다.",
+                social_item2_link: "제휴 문의", newsletter_label: "Stay Connected", newsletter_title: "마인드풀 갤러리에 가입하세요", newsletter_btn: "구독하기",
+                footer_tagline: "미용을 통해 사회 복귀와 회복탄력성을 지원하는 인테그레이션 스튜디오.",
+                footer_service_label: "Service", footer_social_label: "Social Impact", footer_artworks: "Artworks", footer_events: "Events",
+                footer_legal_label: "Legal", footer_privacy: "Privacy Policy", footer_terms: "Terms of Use"
+            }
+        };
+
+        function setLanguage(lang) {
+            const t = translations[lang];
+            const elements = document.querySelectorAll('[data-i18n]');
+            
+            elements.forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) {
+                    el.innerHTML = t[key];
+                }
+            });
+
+            // Update UI
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.style.opacity = btn.getAttribute('data-lang') === lang ? '1' : '0.4';
+            });
+
+            localStorage.setItem('repalette_lang', lang);
+        }
+
+        // Initialize from local storage or default to JA
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedLang = localStorage.getItem('repalette_lang') || 'ja';
+            setLanguage(savedLang);
+        });
+    </script>
+</body>
+</html>
