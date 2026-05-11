@@ -120,7 +120,7 @@
     <main>
         <!-- Hero Animation Area -->
         <section id="hero-trigger" class="relative w-full h-[600vh]">
-            <div class="sticky top-0 h-screen w-full overflow-hidden bg-[#f5f1e6]">
+            <div class="sticky top-0 h-[100svh] w-full overflow-hidden bg-[#f5f1e6]">
                 <canvas id="hero-canvas"></canvas>
                 
                 <!-- Hero Overlays -->
@@ -408,11 +408,11 @@
         const images = [];
         const fallbacks = [];
         const flowerImages = [
-            'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=1600',
-            'https://images.unsplash.com/photo-1616683693504-3ea7e9ad6fec?q=80&w=1600',
+            'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?q=80&w=1600',
             'https://images.unsplash.com/photo-1552046122-03184de85e08?q=80&w=1600',
-            'https://images.unsplash.com/photo-1515377905703-c4788e51af15?q=80&w=1600',
-            'https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1600'
+            'https://images.unsplash.com/photo-1556228578-019ba2f7ef33?q=80&w=1600',
+            'https://images.unsplash.com/photo-1490750967868-88aa4486c946?q=80&w=1600',
+            'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1600'
         ];
 
         const air = { frame: 0 };
@@ -718,6 +718,7 @@
         }
 
         // Initialize from local storage or default to JA
+        window.addEventListener('resize', handleResize);
         window.addEventListener('DOMContentLoaded', () => {
             const savedLang = localStorage.getItem('repalette_lang') || 'ja';
             setLanguage(savedLang);
