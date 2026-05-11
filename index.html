@@ -408,51 +408,55 @@
         const images = [];
         const fallbacks = [];
         const flowerImages = [
-            '/images/beauty_salon.png',
+            'images/beauty_salon.png',
             'https://images.unsplash.com/photo-1552046122-03184de85e08?q=80&w=1600',
             'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?q=80&w=1600',
-            'https://images.unsplash.com/photo-1556229167-da31d9d9df6f?q=80&w=1600',
+            'https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1600',
             'https://images.unsplash.com/photo-1596755094514-f87e34085b2c?q=80&w=1600'
         ];
 
         const air = { frame: 0 };
 
         // Preload Fallbacks
-        let fallbacksLoaded = 0;
-        flowerImages.forEach(url => {
+        let fallbacksLoadedCount = 0;
+        flowerImages.forEach((url, i) => {
             const img = new Image();
             img.src = url;
             img.onload = () => {
-                fallbacksLoaded++;
-                if (fallbacksLoaded === flowerImages.length) startApp();
+                fallbacksLoadedCount++;
+                if (fallbacksLoadedCount === flowerImages.length) startApp();
             };
             img.onerror = () => {
-                fallbacksLoaded++;
-                if (fallbacksLoaded === flowerImages.length) startApp();
+                console.error(`Failed to load fallback image: ${url}`);
+                fallbacksLoadedCount++;
+                if (fallbacksLoadedCount === flowerImages.length) startApp();
             };
-            fallbacks.push(img);
+            fallbacks[i] = img;
         });
 
         // Preload Main Sequence
-        let imagesLoaded = 0;
+        let imagesLoadedCount = 0;
         for (let i = 0; i < frameCount; i++) {
             const img = new Image();
             img.src = currentFrame(i);
             img.onload = () => {
-                imagesLoaded++;
+                imagesLoadedCount++;
                 updateLoaderProgress();
             };
             img.onerror = () => {
-                // If local fails, we map to fallbacks
+                // If local sequence fails, we map to fallbacks
                 const idx = Math.floor((i / frameCount) * flowerImages.length);
                 img.src = flowerImages[idx];
                 img.onerror = null;
+                // Still count as progress for loader if fallback is set
+                imagesLoadedCount++;
+                updateLoaderProgress();
             };
             images.push(img);
         }
 
         function updateLoaderProgress() {
-            const progress = Math.round((imagesLoaded / frameCount) * 100);
+            const progress = Math.round((imagesLoadedCount / frameCount) * 100);
             document.getElementById('loader-bar').style.width = progress + '%';
             document.getElementById('loader-text').innerText = `Preparing Garden ${progress}%`;
         }
@@ -489,7 +493,7 @@
             context.fillRect(0, 0, canvas.width, canvas.height);
 
             const draw = (image, alpha = 1.0, scaleBoost = 1.0) => {
-                if (!image.complete || image.naturalWidth === 0) return false;
+                if (!image || !image.complete || image.naturalWidth === 0) return false;
                 const hRatio = canvas.width / image.width;
                 const vRatio = canvas.height / image.height;
                 const ratio = Math.max(hRatio, vRatio) * scaleBoost;
@@ -501,12 +505,11 @@
                 return true;
             };
 
-            const isRemoteFallback = img.src.includes('unsplash');
+            // Try to draw from main images sequence
+            const mainDrawn = draw(img);
 
-            if (!isRemoteFallback && img.complete) {
-                draw(img);
-            } else if (fallbacks.length > 0) {
-                // Smooth cross-fade for fallbacks
+            // If main failed (not loaded yet or broken), use cross-faded fallbacks
+            if (!mainDrawn && fallbacks.length > 0) {
                 const totalProgress = frameIndex / (frameCount - 1);
                 const sectionCount = fallbacks.length - 1;
                 const section = totalProgress * sectionCount;
