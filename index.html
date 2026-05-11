@@ -444,11 +444,7 @@
                 updateLoaderProgress();
             };
             img.onerror = () => {
-                // If local sequence fails, we map to fallbacks
-                const idx = Math.floor((i / frameCount) * flowerImages.length);
-                img.src = flowerImages[idx];
-                img.onerror = null;
-                // Still count as progress for loader if fallback is set
+                // Main sequence frame missing - count progress and let render() handle fallback
                 imagesLoadedCount++;
                 updateLoaderProgress();
             };
@@ -517,10 +513,16 @@
                 const index2 = Math.min(index1 + 1, fallbacks.length - 1);
                 const localProgress = section % 1;
                 
-                const scaleBoost = 1.0 + (totalProgress * 0.25);
+                const scaleBoost = 1.0 + (totalProgress * 0.15); // Slightly gentler zoom
                 
-                if (fallbacks[index1]) draw(fallbacks[index1], 1 - localProgress, scaleBoost);
-                if (fallbacks[index2] && index1 !== index2) draw(fallbacks[index2], localProgress, scaleBoost);
+                // Drawing base image at full opacity and the next one on top with faded alpha 
+                // creates a much smoother cross-fade without desaturating the colors.
+                if (fallbacks[index1]) draw(fallbacks[index1], 1.0, scaleBoost);
+                if (fallbacks[index2] && index1 !== index2) {
+                    // Quadratic easing for the transition alpha
+                    const alpha = localProgress < 0.5 ? 2 * localProgress * localProgress : -1 + (4 - 2 * localProgress) * localProgress;
+                    draw(fallbacks[index2], alpha, scaleBoost);
+                }
             }
 
             // Decorative overlay when sequence is almost done
