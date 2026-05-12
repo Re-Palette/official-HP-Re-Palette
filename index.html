@@ -155,14 +155,14 @@
                 <canvas id="hero-canvas"></canvas>
                 
                 <!-- Hero Overlays -->
-                <div id="hero-content" class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 pointer-events-none z-20 bg-brand-beige/40 backdrop-blur-[3px]">
+                <div id="hero-content" class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 pointer-events-none z-20 bg-white/20 backdrop-blur-[2px]">
                     <div id="hero-title" class="overflow-hidden mb-4">
-                        <h1 class="italiana text-6xl md:text-[120px] leading-[0.9] tracking-tighter text-brand-navy">
+                        <h1 class="italiana text-6xl md:text-[120px] leading-[0.9] tracking-tighter text-brand-navy drop-shadow-md">
                             <span data-i18n="hero_title_1">Cultivate</span><br>
                             <span class="ml-12 md:ml-24 italic" data-i18n="hero_title_2">Your Radiance</span>
                         </h1>
                     </div>
-                    <p id="hero-subtitle" class="text-[10px] md:text-xs uppercase tracking-[0.5em] font-bold text-brand-navy/80 max-w-xs md:max-w-md" data-i18n="hero_subtitle">
+                    <p id="hero-subtitle" class="text-[10px] md:text-xs uppercase tracking-[0.5em] font-bold text-brand-navy/80 max-w-xs md:max-w-md drop-shadow-sm" data-i18n="hero_subtitle">
                         Beauty as a ritual of social reintegration & rediscovery
                     </p>
                     <div id="hero-scroll" class="absolute bottom-12 flex flex-col items-center gap-4 opacity-40">
@@ -176,12 +176,12 @@
                     <div class="floating-card p-12 bg-[#0c1a30] border border-white/10 relative overflow-hidden">
                         <div class="absolute top-0 left-0 w-1.5 h-full bg-brand-gold"></div>
                         <span class="text-[10px] font-bold tracking-[0.4em] uppercase text-white/60 mb-6 block">Spring Collection</span>
-                        <h3 class="italiana text-4xl mb-8 leading-[1.1] text-white">The Art of <br><span class="italic opacity-60">Re-Emergence</span></h3>
-                        <p class="text-[13px] leading-relaxed text-white/90 mb-10 japanese font-medium">
+                        <h3 class="italiana text-4xl mb-8 leading-[1.1] text-white drop-shadow-md">The Art of <br><span class="italic opacity-60">Re-Emergence</span></h3>
+                        <p class="text-[13px] leading-relaxed text-white/90 mb-10 japanese font-medium drop-shadow-sm">
                             私たちは、美容を単なる外見の装飾ではなく、<br>内面的なレジリエンス（回復力）への儀式であると考えています。
                         </p>
-                        <button class="group w-full py-5 border border-white text-[10px] font-bold uppercase tracking-widest text-white relative overflow-hidden transition-all">
-                            <span class="relative z-10 group-hover:text-brand-navy transition-colors duration-300">View Methodology</span>
+                        <button class="group w-full py-5 border border-white text-[10px] font-bold uppercase tracking-widest text-white relative overflow-hidden transition-all shadow-lg shadow-black/20">
+                            <span class="relative z-10 group-hover:text-brand-navy transition-colors duration-300 drop-shadow-sm">View Methodology</span>
                             <div class="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
                         </button>
                     </div>
@@ -576,6 +576,21 @@
             context.fillStyle = '#f5f1e6';
             context.fillRect(0, 0, canvas.width, canvas.height);
 
+            // User requested less blur and more transparency/fading for readability
+            const startFadeCount = frameCount * 0.25;
+            let blur = 0;
+            let brightness = 1.0;
+            let imageAlpha = 1.0;
+            
+            if (frameIndex < startFadeCount) {
+                const progress = frameIndex / startFadeCount;
+                const intensity = 1 - progress;
+                blur = intensity * 3; // Significantly reduced blur
+                brightness = 1 + (intensity * 0.15); // Maintain whiter look
+                imageAlpha = 0.6 + (progress * 0.4); // Start with more transparency
+            }
+            context.filter = blur > 0 ? `blur(${blur}px) brightness(${brightness})` : 'none';
+
             const draw = (image, alpha = 1.0, scaleBoost = 1.0) => {
                 if (!image || !image.complete || image.naturalWidth === 0) return false;
                 const hRatio = canvas.width / image.width;
@@ -583,7 +598,7 @@
                 const ratio = Math.max(hRatio, vRatio) * scaleBoost;
                 const x = (canvas.width - image.width * ratio) / 2;
                 const y = (canvas.height - image.height * ratio) / 2;
-                context.globalAlpha = alpha;
+                context.globalAlpha = alpha * imageAlpha;
                 context.drawImage(image, x, y, image.width * ratio, image.height * ratio);
                 context.globalAlpha = 1.0;
                 return true;
