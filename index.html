@@ -488,19 +488,17 @@
 
         const canvas = document.getElementById('hero-canvas');
         const context = canvas.getContext('2d');
-        const frameCount = 240;
+        const frameCount = 100; // Lowered as we are only using fallbacks now
         
-        // Sequence Paths (001 to 240)
-        const currentFrame = index => `images/ezgif-frame-${(index + 1).toString().padStart(3, '0')}.jpg`;
-
-        const images = [];
+        // No local sequence files, using only fallbacks
+        const images = []; 
         const fallbacks = [];
         const flowerImages = [
-            'https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=1600',
-            'images/beauty_salon.png',
-            'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=1600',
-            'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?q=80&w=1600',
-            'https://images.unsplash.com/photo-1590439471364-192aa70c0b53?q=80&w=1600'
+            'https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=1600', // Original first image
+            'https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1600', // Elegant Salon Interior
+            'https://images.unsplash.com/photo-1521590832167-7bcbfaa6381f?q=80&w=1600&auto=format&fit=crop', // Professional tools/products
+            'https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?q=80&w=1600&auto=format&fit=crop', // Aesthetic atmosphere
+            'https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?q=80&w=1600&auto=format&fit=crop'  // Serenity/Focus
         ];
 
         const air = { frame: 0 };
@@ -512,35 +510,20 @@
             img.src = url;
             img.onload = () => {
                 fallbacksLoadedCount++;
+                updateLoaderProgress();
                 if (fallbacksLoadedCount === flowerImages.length) startApp();
             };
             img.onerror = () => {
                 console.error(`Failed to load fallback image: ${url}`);
                 fallbacksLoadedCount++;
+                updateLoaderProgress();
                 if (fallbacksLoadedCount === flowerImages.length) startApp();
             };
             fallbacks[i] = img;
         });
 
-        // Preload Main Sequence
-        let imagesLoadedCount = 0;
-        for (let i = 0; i < frameCount; i++) {
-            const img = new Image();
-            img.src = currentFrame(i);
-            img.onload = () => {
-                imagesLoadedCount++;
-                updateLoaderProgress();
-            };
-            img.onerror = () => {
-                // Main sequence frame missing - count progress and let render() handle fallback
-                imagesLoadedCount++;
-                updateLoaderProgress();
-            };
-            images.push(img);
-        }
-
         function updateLoaderProgress() {
-            const progress = Math.round((imagesLoadedCount / frameCount) * 100);
+            const progress = Math.round((fallbacksLoadedCount / flowerImages.length) * 100);
             document.getElementById('loader-bar').style.width = progress + '%';
             document.getElementById('loader-text').innerText = `Preparing Garden ${progress}%`;
         }
