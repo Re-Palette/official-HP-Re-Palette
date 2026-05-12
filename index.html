@@ -576,20 +576,21 @@
             context.fillStyle = '#f5f1e6';
             context.fillRect(0, 0, canvas.width, canvas.height);
 
-            // User requested less blur and more transparency/fading for readability
+            // User requested whiter look and fixed transparency for better readability
             const startFadeCount = frameCount * 0.25;
-            let blur = 0;
             let brightness = 1.0;
             let imageAlpha = 1.0;
             
             if (frameIndex < startFadeCount) {
                 const progress = frameIndex / startFadeCount;
                 const intensity = 1 - progress;
-                blur = intensity * 3; // Significantly reduced blur
-                brightness = 1 + (intensity * 0.15); // Maintain whiter look
-                imageAlpha = 0.6 + (progress * 0.4); // Start with more transparency
+                // Favor whiteness/brightness over blur as requested
+                brightness = 1 + (intensity * 0.12); 
+                imageAlpha = 0.7 + (progress * 0.3); // Start slightly faded for better contrast
             }
-            context.filter = blur > 0 ? `blur(${blur}px) brightness(${brightness})` : 'none';
+            
+            // Apply whiteness filter
+            context.filter = brightness > 1.0 ? `brightness(${brightness})` : 'none';
 
             const draw = (image, alpha = 1.0, scaleBoost = 1.0) => {
                 if (!image || !image.complete || image.naturalWidth === 0) return false;
@@ -598,6 +599,7 @@
                 const ratio = Math.max(hRatio, vRatio) * scaleBoost;
                 const x = (canvas.width - image.width * ratio) / 2;
                 const y = (canvas.height - image.height * ratio) / 2;
+                
                 context.globalAlpha = alpha * imageAlpha;
                 context.drawImage(image, x, y, image.width * ratio, image.height * ratio);
                 context.globalAlpha = 1.0;
@@ -616,13 +618,15 @@
                 const index2 = Math.min(index1 + 1, fallbacks.length - 1);
                 const localProgress = section % 1;
                 
-                const scaleBoost = 1.0 + (totalProgress * 0.15); // Slightly gentler zoom
+                const scaleBoost = 1.0 + (totalProgress * 0.12);
                 
-                // Drawing base image at full opacity and the next one on top with faded alpha 
-                // creates a much smoother cross-fade without desaturating the colors.
-                if (fallbacks[index1]) draw(fallbacks[index1], 1.0, scaleBoost);
-                if (fallbacks[index2] && index1 !== index2) {
-                    // Quadratic easing for the transition alpha
+                // Draw base image
+                if (fallbacks[index1]) {
+                    draw(fallbacks[index1], 1.0, scaleBoost);
+                }
+                
+                // Draw transition image
+                if (index1 !== index2 && fallbacks[index2]) {
                     const alpha = localProgress < 0.5 ? 2 * localProgress * localProgress : -1 + (4 - 2 * localProgress) * localProgress;
                     draw(fallbacks[index2], alpha, scaleBoost);
                 }
